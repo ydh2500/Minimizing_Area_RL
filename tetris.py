@@ -1,42 +1,32 @@
 import pygame
 import sys
 import random
+from Piece import *
 from pygame.locals import *
 
-class Piece:
-    O = (((0,0,0,0,0), (0,0,0,0,0),(0,0,1,1,0),(0,0,1,1,0),(0,0,0,0,0)),) * 4
+# pretty UI
+class P_UI:
+    """docstring for P_UI"""
+    # Background
+    black = (10, 10, 10) 
+    black_2 = (26, 26, 26)
+    white = (255, 255, 255)
 
-    I = (((0,0,0,0,0),(0,0,0,0,0),(0,1,1,1,1),(0,0,0,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,1,0,0)),
-         ((0,0,0,0,0),(0,0,0,0,0),(1,1,1,1,0),(0,0,0,0,0),(0,0,0,0,0)),
-         ((0,0,1,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,0,0,0)))
+    background = black
 
-    L = (((0,0,0,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,1,1,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,0,0,0),(0,1,1,1,0),(0,1,0,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,1,1,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,0,1,0),(0,1,1,1,0),(0,0,0,0,0),(0,0,0,0,0)))
+    # Piece_color
+    cyan = (69, 206, 204) 
+    blue = (64, 111, 249) 
+    orange = (253, 189, 53) 
+    yellow = (246, 227, 90) 
+    green = (98, 190, 68) 
+    pink = (242, 64, 235) 
+    red = (225, 13, 27)
 
-    J = (((0,0,0,0,0),(0,0,1,0,0),(0,0,1,0,0),(0,1,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,1,0,0,0),(0,1,1,1,0),(0,0,0,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,1,1,0),(0,0,1,0,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,0,0,0),(0,1,1,1,0),(0,0,0,1,0),(0,0,0,0,0)))
+    # PIECES = {'O': O, 'I': I, 'L': L, 'J': J, 'Z': Z, 'S':S, 'T':T}
+    COLORS = {'O': yellow, 'I': cyan, 'L': orange, 'J': blue, 'Z': red, 'S': green, 'T':pink}
 
-    Z = (((0,0,0,0,0),(0,0,0,1,0),(0,0,1,1,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,0,0,0),(0,1,1,0,0),(0,0,1,1,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,1,0,0),(0,1,1,0,0),(0,1,0,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,1,1,0,0),(0,0,1,1,0),(0,0,0,0,0),(0,0,0,0,0)))
-
-    S = (((0,0,0,0,0),(0,0,1,0,0),(0,0,1,1,0),(0,0,0,1,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,0,0,0),(0,0,1,1,0),(0,1,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,1,0,0,0),(0,1,1,0,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,1,1,0),(0,1,1,0,0),(0,0,0,0,0),(0,0,0,0,0)))
-
-    T = (((0,0,0,0,0),(0,0,1,0,0),(0,0,1,1,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,0,0,0),(0,1,1,1,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,1,0,0),(0,1,1,0,0),(0,0,1,0,0),(0,0,0,0,0)),
-         ((0,0,0,0,0),(0,0,1,0,0),(0,1,1,1,0),(0,0,0,0,0),(0,0,0,0,0)))
-
-    PIECES = {'O': O, 'I': I, 'L': L, 'J': J, 'Z': Z, 'S':S, 'T':T}
+class Mino:
 
     def __init__(self, piece_name=None):
         if piece_name:
@@ -45,6 +35,7 @@ class Piece:
             self.piece_name = random.choice(list(Piece.PIECES.keys()))
         self.rotation = 0
         self.array2d = Piece.PIECES[self.piece_name][self.rotation]
+        self.color = P_UI.COLORS[self.piece_name]
 
     def __iter__(self):
         for row in self.array2d:
@@ -70,7 +61,9 @@ class Board:
         self.generate_piece()
 
     def generate_piece(self):
-        self.piece = Piece()
+        mino = Mino()
+        self.piece = mino 
+        self.color = mino.color
         self.piece_x, self.piece_y = 3, 0
 
     def absorb_piece(self):
@@ -106,7 +99,7 @@ class Board:
         dy_ = self.piece_y + dy
         if self.collide_with_board(dx=dx_, dy=dy_):
             return False
-        return True
+        else : return True
 
     def _can_drop_piece(self):
         return self._can_move_piece(dx=0, dy=1)
@@ -168,7 +161,7 @@ class Board:
     def game_over(self):
         return sum(self.board[0]) > 0 or sum(self.board[1]) > 0
 
-    def draw_blocks(self, array2d, color=(0,0,255), dx=0, dy=0):
+    def draw_blocks(self, array2d, color=P_UI.white, dx=0, dy=0):
         for y, row in enumerate(array2d):
             y += dy
             if y >= 2 and y < self.height:
@@ -182,13 +175,13 @@ class Board:
                                             self.block_size,
                                             self.block_size))
                         # draw border
-                        pygame.draw.rect(self.screen, (0, 0, 0),
+                        pygame.draw.rect(self.screen, P_UI.background,
                                          (  x_pix, y_pix,
                                             self.block_size,
                                             self.block_size), 1)
 
     def draw(self):
-        self.draw_blocks(self.piece, dx=self.piece_x, dy=self.piece_y)
+        self.draw_blocks(self.piece, self.color, dx=self.piece_x, dy=self.piece_y)
         self.draw_blocks(self.board)
 
 class Tetris:
@@ -229,7 +222,7 @@ class Tetris:
                 print ("Game over")
                 pygame.quit()
                 sys.exit()
-            self.screen.fill((0, 0, 0))
+            self.screen.fill(P_UI.background)
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
