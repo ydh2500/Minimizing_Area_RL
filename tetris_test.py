@@ -1,6 +1,6 @@
 import pygame
-import sys
 import random
+from pygame.mixer import *
 from Piece import *
 from pygame.locals import *
 
@@ -25,14 +25,15 @@ class P_UI:
     pink = (242, 64, 235)
     red = (225, 13, 27)
 
-    # PIECES = {1: I,    2: J,    3: L,     4: O,      5: S,     6:T,     7:Z}
-    COLORS = { 1: cyan, 2: blue, 3: orange, 4: yellow, 5: green, 6: pink, 7:red}
+    # PIECES =                  {1: I,    2: J,    3: L,     4: O,      5: S,     6:T,     7:Z}
+    COLORS = { 0: t_background, 1: cyan, 2: blue, 3: orange, 4: yellow, 5: green, 6: pink, 7:red, 8:grey_2}
     # width
     WIDTH = 500
     # height
     HEIGHT = 520
     # font_path , font = I LOVE U 
     path = "./materials/font/Iloveu.ttf"
+
 
     # Draw texts
 
@@ -172,10 +173,10 @@ class Board:
     def rotate_piece(self, clockwise=True):
         self._try_rotate_piece(clockwise)
 
-    def score_up(self, remove_):
-        self.score += 10
-        self.level = 1 + self.score // 300
-        self.goal = 180 + self.level * self.level * 20
+    def score_up(self, rline):
+        self.score += (10 + rline * rline * 20)
+        if self.score >= self.goal : self.level += 1
+        self.goal = 280 + self.level * self.level * self.level * 20
 
     def _delete_line(self, y):
         for y in reversed(range(1, y+1)):
@@ -185,8 +186,7 @@ class Board:
         remove = [y for y, row in enumerate(self.board) if all(row)]
         for y in remove:
             self._delete_line(y)
-        self.score
-        self.score_up()
+        self.score_up(len(remove))
 
     def hold_block(self):
         if self.holding :
@@ -196,11 +196,19 @@ class Board:
             self.holding_block = self.piece
             self.holding = True
             self.generate_piece()
+    
+    def Ghost_spot(self, dx, dy):
+        bt_dy = dy + 1
+        while not self.board[dx][bt_dy] :
+            bt_dy += 1
+        return bt_dy-1
+
             
     def game_over(self):
         return sum(self.board[0]) > 0 or sum(self.board[1]) > 0
 
     def draw_blocks(self, array2d, dx=0, dy=0, board=0):
+        temp, ghost_y = [],  1000
         for y, row in enumerate(array2d):
             y += dy
             if y >= 2 and y < self.t_height:
@@ -215,12 +223,19 @@ class Board:
                                          (  x_pix, y_pix,
                                             self.block_size,
                                             self.block_size))
+                        if not Board :
+                            temp.append(x)
+                            ghost_y = min(ghost_y, self.Ghost_spot(x, y)) 
                     # Board
                     if board :
                         pygame.draw.rect(self.screen, P_UI.grey,
                         (  x_pix, y_pix,
                             self.block_size,
                             self.block_size), 1)
+            if not ( temp ==[]  or board ):
+                for 
+                 
+
 
     def draw_static_block(self, next_name, dx, dy, size):
         next_block = Piece.PIECES[next_name][0]
@@ -268,20 +283,20 @@ class Board:
         text_goal = font1.render("GOAL", 1, P_UI.black)
         text_next = font0.render("NEXT", 1, P_UI.black)
         text_score = font1.render("SCORE", 1, P_UI.black)
-        num_level = pygame.font.Font(P_UI.path, 30).render(str(self.level), 1, P_UI.black)
+        num_level = pygame.font.Font(P_UI.path, 40).render(str(self.level), 1, P_UI.black)
         num_goal = pygame.font.Font(P_UI.path, 30).render(str(self.goal), 1, P_UI.black)
-        num_score = pygame.font.Font(P_UI.path, 30).render(str(int(self.score)), 1, P_UI.black)
+        num_score = pygame.font.Font(P_UI.path, 35).render(str(int(self.score)), 1, P_UI.black)
 
         self.screen.blit(text_hold, (39, 34))
-        self.screen.blit(text_level, (37, 210))
-        self.screen.blit(text_goal, (39, 350))
+        self.screen.blit(text_level, (40, 235))
+        self.screen.blit(text_goal, (39, 360))
         self.screen.blit(text_next, (400, 30))
         self.screen.blit(text_score, (392, 300))
-        self.screen.blit(num_level, (37, 290))
-        self.screen.blit(num_goal, (38, 400))
-        self.screen.blit(num_score, (420, 345))
+        self.screen.blit(num_level, (55, 280))
+        self.screen.blit(num_goal, (50, 415))
+        self.screen.blit(num_score, (410, 345))
 
-        self.draw_static_block(self.next_1, 385, 75, self.block_size+2)
+        self.draw_static_block(self.next_1, 390, 75, self.block_size+2)
         self.draw_static_block(self.next_2, 400, 170, self.block_size-5)
         self.draw_static_block(self.next_3, 400, 220, self.block_size-5)
         if self.holding_block != None:
@@ -317,6 +332,7 @@ class Tetris:
             self.board.hold_block()
 
     def pause(self):
+        pygame.mixer.init()
         running = True
         while running:
             for event in pygame.event.get():
@@ -325,6 +341,7 @@ class Tetris:
 
     def run(self):
         pygame.init()
+        pygame.display.set_caption('TEtris')
         pygame.time.set_timer(Tetris.DROP_EVENT, 500)
 
         while True:
@@ -343,7 +360,7 @@ class Tetris:
 
             self.board.draw()
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(100)
 
 
 if __name__ == "__main__":

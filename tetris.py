@@ -1,6 +1,7 @@
 import pygame
-import sys
 import random
+import sys
+from pygame.mixer import *
 from Piece import *
 from pygame.locals import *
 
@@ -25,14 +26,15 @@ class P_UI:
     pink = (242, 64, 235)
     red = (225, 13, 27)
 
-    # PIECES = {1: I,    2: J,    3: L,     4: O,      5: S,     6:T,     7:Z}
-    COLORS = { 1: cyan, 2: blue, 3: orange, 4: yellow, 5: green, 6: pink, 7:red}
+    # PIECES =                  {1: I,    2: J,    3: L,     4: O,      5: S,     6:T,     7:Z}
+    COLORS = { 0: t_background, 1: cyan, 2: blue, 3: orange, 4: yellow, 5: green, 6: pink, 7:red, 8:grey_2}
     # width
     WIDTH = 500
     # height
     HEIGHT = 520
     # font_path , font = I LOVE U 
     path = "./materials/font/Iloveu.ttf"
+
 
     # Draw texts
 
@@ -82,6 +84,7 @@ class Board:
 
     def generate_piece(self):
         self.piece = Mino(self.next_1)
+        self.piece_num = self. next_1
         self.next_1 = self.next_2
         self.next_2 = self.next_3
         self.next_3 = random.randrange(1, 8)
@@ -195,11 +198,34 @@ class Board:
             self.holding_block = self.piece
             self.holding = True
             self.generate_piece()
-            
     def game_over(self):
         return sum(self.board[0]) > 0 or sum(self.board[1]) > 0
 
+    # def lowest(self, array2d):
+    #     x = self.piece_x
+    #     y = self.piece_y
+    #     for i in range(4):
+    #         for j in range(4):
+    #             if array2d[i][j] != 0:
+    #                 if (y + i + 1) > 20:
+    #                     return True
+    #                 elif self.board[x + j][y + i + 1] != 0 and\
+    #                      self.board[x + j][y + i + 1] != 8:
+    #                     return True
+    # def draw_ghost(self, array2d):
+
+    #     tx, ty = self.piece_x, self.piece_y
+    #     while not self.lowest(array2d):
+    #         ty += 1
+
+    #     for i in range(4):
+    #         for j in range(4):
+    #             if array2d[i][j] != 0:
+    #                 self.board[tx + j][ty + i] = 8  
+
     def draw_blocks(self, array2d, dx=0, dy=0, board=0):
+        # if not board :
+        #    self. draw_ghost(array2d.array2d)
         for y, row in enumerate(array2d):
             y += dy
             if y >= 2 and y < self.t_height:
@@ -221,6 +247,7 @@ class Board:
                             self.block_size,
                             self.block_size), 1)
 
+
     def draw_static_block(self, next_name, dx, dy, size):
         next_block = Piece.PIECES[next_name][0]
         for x in range(self.mino_size_row_and_col):
@@ -236,9 +263,11 @@ class Board:
                     )
                     pygame.draw.rect(self.screen, P_UI.backcolor,
                      (  x_pix, y_pix,
-                        self.block_size,
-                        self.block_size), 1)
-                        
+                        size-2,
+                        size-2), 1)
+
+     
+
     def draw_board(self):
         x_pix, y_pix = self.tetris_location(0, 0)
         x_end = x_pix + self.t_width * self.block_size
@@ -273,16 +302,16 @@ class Board:
 
         self.screen.blit(text_hold, (39, 34))
         self.screen.blit(text_level, (40, 235))
-        self.screen.blit(text_goal, (39, 370))
+        self.screen.blit(text_goal, (39, 360))
         self.screen.blit(text_next, (400, 30))
         self.screen.blit(text_score, (392, 300))
         self.screen.blit(num_level, (55, 280))
-        self.screen.blit(num_goal, (50, 430))
+        self.screen.blit(num_goal, (50, 415))
         self.screen.blit(num_score, (410, 345))
 
-        self.draw_static_block(self.next_1, 390, 75, self.block_size+2)
-        self.draw_static_block(self.next_2, 400, 170, self.block_size-5)
-        self.draw_static_block(self.next_3, 400, 220, self.block_size-5)
+        self.draw_static_block(self.next_1, 390, 85, self.block_size+2)
+        self.draw_static_block(self.next_2, 400, 170, self.block_size-3)
+        self.draw_static_block(self.next_3, 400, 220, self.block_size-3)
         if self.holding_block != None:
             self.draw_static_block(self.holding_block.piece_name, 30, 100, self.block_size+2)
 
@@ -298,6 +327,34 @@ class Tetris:
         self.screen = pygame.display.set_mode((P_UI.WIDTH, P_UI.HEIGHT))
         self.clock = pygame.time.Clock()
         self.board = Board(self.screen)
+        pygame.init()
+        pygame.display.set_caption('TEtris')
+        pygame.time.set_timer(Tetris.DROP_EVENT, 300)
+        self.start()
+
+    def start(self):
+        self.screen.fill(P_UI.backcolor)
+        hei, size = 240, 20
+        self.board.draw_static_block(2, 60, hei, size)
+        self.board.draw_static_block(5, 160, hei, size)
+        self.board.draw_static_block(7, 250, hei, size)
+        self.board.draw_static_block(3, 350, hei, size)
+        self.board.draw_static_block(4, 80, hei+80, size)
+        self.board.draw_static_block(1, 200, hei+80, size)
+        self.board.draw_static_block(6, 330, hei+80, size)
+        image = pygame.image.load('./materials/image/logo.jpg')
+        self.screen.blit(image, (80, 50))
+        image2 = pygame.image.load('./materials/image/start.jpg')
+        self.screen.blit(image2, (140, 380))
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == KEYDOWN:
+                    self.run()
+
+            pygame.display.update()
 
     def handle_key(self, event_key):
         if event_key == K_DOWN:
@@ -323,7 +380,6 @@ class Tetris:
                     running = False
 
     def run(self):
-        pygame.init()
         pygame.time.set_timer(Tetris.DROP_EVENT, 500)
 
         while True:
@@ -346,4 +402,4 @@ class Tetris:
 
 
 if __name__ == "__main__":
-    Tetris().run()
+    Tetris()
