@@ -172,21 +172,20 @@ class Board:
     def rotate_piece(self, clockwise=True):
         self._try_rotate_piece(clockwise)
 
-    def score_up(self):
-        self.score += 10
-        self.level = 1 + self.score // 300
-        self.goal = 180 + self.level * self.level * 20
+    def score_up(self, rline):
+        self.score += (10 + rline * rline * 20)
+        if self.score >= self.goal : self.level += 1
+        self.goal = 280 + self.level * self.level * self.level * 20
 
     def _delete_line(self, y):
         for y in reversed(range(1, y+1)):
             self.board[y] = list(self.board[y-1])
 
     def delete_lines(self):
-        self.score_up()
         remove = [y for y, row in enumerate(self.board) if all(row)]
         for y in remove:
             self._delete_line(y)
-            se
+        self.score_up(len(remove))
 
     def hold_block(self):
         if self.holding :
@@ -268,20 +267,20 @@ class Board:
         text_goal = font1.render("GOAL", 1, P_UI.black)
         text_next = font0.render("NEXT", 1, P_UI.black)
         text_score = font1.render("SCORE", 1, P_UI.black)
-        num_level = pygame.font.Font(P_UI.path, 30).render(str(self.level), 1, P_UI.black)
+        num_level = pygame.font.Font(P_UI.path, 40).render(str(self.level), 1, P_UI.black)
         num_goal = pygame.font.Font(P_UI.path, 30).render(str(self.goal), 1, P_UI.black)
-        num_score = pygame.font.Font(P_UI.path, 30).render(str(int(self.score)), 1, P_UI.black)
+        num_score = pygame.font.Font(P_UI.path, 35).render(str(int(self.score)), 1, P_UI.black)
 
         self.screen.blit(text_hold, (39, 34))
-        self.screen.blit(text_level, (37, 210))
-        self.screen.blit(text_goal, (39, 350))
+        self.screen.blit(text_level, (40, 235))
+        self.screen.blit(text_goal, (39, 370))
         self.screen.blit(text_next, (400, 30))
         self.screen.blit(text_score, (392, 300))
-        self.screen.blit(num_level, (37, 290))
-        self.screen.blit(num_goal, (38, 400))
-        self.screen.blit(num_score, (420, 345))
+        self.screen.blit(num_level, (55, 280))
+        self.screen.blit(num_goal, (50, 430))
+        self.screen.blit(num_score, (410, 345))
 
-        self.draw_static_block(self.next_1, 385, 75, self.block_size+2)
+        self.draw_static_block(self.next_1, 390, 75, self.block_size+2)
         self.draw_static_block(self.next_2, 400, 170, self.block_size-5)
         self.draw_static_block(self.next_3, 400, 220, self.block_size-5)
         if self.holding_block != None:

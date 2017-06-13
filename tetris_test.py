@@ -172,7 +172,7 @@ class Board:
     def rotate_piece(self, clockwise=True):
         self._try_rotate_piece(clockwise)
 
-    def score_up(self):
+    def score_up(self, remove_):
         self.score += 10
         self.level = 1 + self.score // 300
         self.goal = 180 + self.level * self.level * 20
@@ -182,11 +182,11 @@ class Board:
             self.board[y] = list(self.board[y-1])
 
     def delete_lines(self):
-        self.score_up()
         remove = [y for y, row in enumerate(self.board) if all(row)]
         for y in remove:
             self._delete_line(y)
-            se
+        self.score
+        self.score_up()
 
     def hold_block(self):
         if self.holding :
@@ -343,7 +343,7 @@ class Tetris:
 
             self.board.draw()
             pygame.display.update()
-            self.clock.tick(100)
+            self.clock.tick(60)
 
 
 if __name__ == "__main__":
