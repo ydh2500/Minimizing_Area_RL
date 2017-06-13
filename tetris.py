@@ -31,8 +31,8 @@ class P_UI:
     WIDTH = 500
     # height
     HEIGHT = 520
-    # font = I LOVE U
-    font_path = "./materials/font/Iloveu.ttf"
+    # font_path , font = I LOVE U 
+    path = "./materials/font/Iloveu.ttf"
 
     # Draw texts
 
@@ -72,6 +72,9 @@ class Board:
         self.mino_size_row_and_col = Piece.TETRIMINO_SIZE
         self.holding = False
         self.holding_block = None
+        self.score = 0
+        self.level = 0
+        self.goal = 0
 
         for _ in range(self.t_height):
             self.board.append([0] * self.t_width)
@@ -163,19 +166,27 @@ class Board:
     def full_drop_piece(self):
         while self._can_drop_piece():
             self.drop_piece()
+        self.score += self.level * 5
         self.drop_piece()
 
     def rotate_piece(self, clockwise=True):
         self._try_rotate_piece(clockwise)
+
+    def score_up(self):
+        self.score += 10
+        self.level = 1 + self.score // 300
+        self.goal = 180 + self.level * self.level * 20
 
     def _delete_line(self, y):
         for y in reversed(range(1, y+1)):
             self.board[y] = list(self.board[y-1])
 
     def delete_lines(self):
+        self.score_up()
         remove = [y for y, row in enumerate(self.board) if all(row)]
         for y in remove:
             self._delete_line(y)
+            se
 
     def hold_block(self):
         if self.holding :
@@ -248,24 +259,33 @@ class Board:
 
         
 
-        font0 = pygame.font.Font(P_UI.font_path, 25)
+        font0 = pygame.font.Font(P_UI.path, 25)
+        font1 = pygame.font.Font(P_UI.path, 25)
         font0.set_underline(1)
-        # font1 = pygame.font.Font(P_UI.font_path, 30)
+
         text_hold = font0.render("HOLD", 1, P_UI.black)
-        text_level = font0.render("LEVEL", 1, P_UI.black)
-        text_goal = font0.render("GOAL", 1, P_UI.black)
+        text_level = font1.render("LEVEL", 1, P_UI.black)
+        text_goal = font1.render("GOAL", 1, P_UI.black)
         text_next = font0.render("NEXT", 1, P_UI.black)
-        text_score = font0.render("SCORE", 1, P_UI.black)
+        text_score = font1.render("SCORE", 1, P_UI.black)
+        num_level = pygame.font.Font(P_UI.path, 30).render(str(self.level), 1, P_UI.black)
+        num_goal = pygame.font.Font(P_UI.path, 30).render(str(self.goal), 1, P_UI.black)
+        num_score = pygame.font.Font(P_UI.path, 30).render(str(int(self.score)), 1, P_UI.black)
+
         self.screen.blit(text_hold, (39, 34))
         self.screen.blit(text_level, (37, 210))
         self.screen.blit(text_goal, (39, 350))
         self.screen.blit(text_next, (400, 30))
-        self.screen.blit(text_score, (392, 290))
+        self.screen.blit(text_score, (392, 300))
+        # self.screen.blit(num_level, (37, 290))
+        # self.screen.blit(num_goal, (38, 400))
+        # self.screen.blit(num_score, (420, 345))
 
         self.draw_static_block(self.next_1, 385, 75, self.block_size+2)
         self.draw_static_block(self.next_2, 400, 170, self.block_size-5)
         self.draw_static_block(self.next_3, 400, 220, self.block_size-5)
-        # self.draw_static_block(self.)
+        if self.holding_block != None:
+            self.draw_static_block(self.holding_block.piece_name, 30, 100, self.block_size+2)
 
     def draw(self):
         self.draw_board()
@@ -323,7 +343,7 @@ class Tetris:
 
             self.board.draw()
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(100)
 
 
 if __name__ == "__main__":
