@@ -31,7 +31,7 @@ class P_UI:
     # width
     WIDTH = 500
     # height
-    HEIGHT = 520
+    HEIGHT = 500
     # font_path , font = I LOVE U 
     path = "./materials/font/Iloveu.ttf"
 
@@ -89,7 +89,7 @@ class Board:
         self.next_2 = self.next_3
         self.next_3 = random.randrange(1, 8)
 
-        self.piece_x, self.piece_y = 3, 1
+        self.piece_x, self.piece_y = 3, 0
 
     def tetris_location(self, x, y): 
         return self.block_size*(x+7), self.block_size*(y-2)
@@ -176,7 +176,10 @@ class Board:
         self._try_rotate_piece(clockwise)
 
     def score_up(self, rline):
-        self.score += (10 + rline * rline * 20)
+        if self.score > 500000 :
+            self.score = 500000
+        else :
+            self.score += (10 + rline * rline * 20)
         if self.score >= self.goal : self.level += 1
         self.goal = 280 + self.level * self.level * self.level * 20
 
@@ -199,7 +202,11 @@ class Board:
             self.holding = True
             self.generate_piece()
     def game_over(self):
-        return sum(self.board[0]) > 0 or sum(self.board[1]) > 0
+        result = sum(self.board[0]) > 0 or sum(self.board[1]) > 0
+        # if result :
+        #     pass
+        return result
+
 
     # def lowest(self, array2d):
     #     x = self.piece_x
@@ -308,7 +315,6 @@ class Board:
         self.screen.blit(num_level, (55, 280))
         self.screen.blit(num_goal, (50, 415))
         self.screen.blit(num_score, (410, 345))
-
         self.draw_static_block(self.next_1, 390, 85, self.block_size+2)
         self.draw_static_block(self.next_2, 400, 170, self.block_size-3)
         self.draw_static_block(self.next_3, 400, 220, self.block_size-3)
@@ -384,9 +390,17 @@ class Tetris:
 
         while True:
             if self.board.game_over():
-                print ("Game over")
-                pygame.quit()
-                sys.exit()
+                # pygame.time.wait(3000)
+                
+                for event in pygame.event.get():
+                    over = pygame.font.Font(P_UI.path, 60).render(("Good Game !"), 1, P_UI.black)
+                    self.screen.blit(over, (40, 250))
+                    if event.type == KEYDOWN:
+                        if event.key == K_SPACE:
+                            Tetris()
+                        else :
+                            pygame.quit()
+                            sys.exit()
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
