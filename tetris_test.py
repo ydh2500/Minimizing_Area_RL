@@ -25,14 +25,16 @@ class P_UI:
     pink = (242, 64, 235)
     red = (225, 13, 27)
 
-    # PIECES = {1: O, 2: I, 3: L, 4: J, 4ㅣ5: Z, 6:S, 7:T}
-    COLORS = { 1: yellow, 2: cyan, 3: orange, 4: blue, 5: red, 6: green, 7:pink}
-
+    # PIECES = {1: I,    2: J,    3: L,     4: O,      5: S,     6:T,     7:Z}
+    COLORS = { 1: cyan, 2: blue, 3: orange, 4: yellow, 5: green, 6: pink, 7:red}
     # width
     WIDTH = 500
     # height
     HEIGHT = 520
+    # font = I LOVE U
+    font_path = "./materials/font/Iloveu.ttf"
 
+    # Draw texts
 
 class Mino:
 
@@ -64,18 +66,27 @@ class Board:
         self.t_height = 25
         self.block_size = 20
         self.board = []
+        self.next_1 = random.randrange(1, 8)
+        self.next_2 = random.randrange(1, 8)
+        self.next_3 = random.randrange(1, 8)
+        self.mino_size_row_and_col = Piece.TETRIMINO_SIZE
+        self.holding = False
+        self.holding_block = None
+
         for _ in range(self.t_height):
             self.board.append([0] * self.t_width)
         self.generate_piece()
 
     def generate_piece(self):
-        mino = Mino()
-        self.piece = mino
-        self.color = mino.color
-        self.piece_x, self.piece_y = 3, 2
+        self.piece = Mino(self.next_1)
+        self.next_1 = self.next_2
+        self.next_2 = self.next_3
+        self.next_3 = random.randrange(1, 8)
 
-    def pos_to_pixel(self, x, y):
-        return self.block_size*(x+2), self.block_size*(y-2)
+        self.piece_x, self.piece_y = 3, 1
+
+    def tetris_location(self, x, y): 
+        return self.block_size*(x+7), self.block_size*(y-2)
 
     def absorb_piece(self):
         for y, row in enumerate(self.piece):
@@ -166,6 +177,15 @@ class Board:
         for y in remove:
             self._delete_line(y)
 
+    def hold_block(self):
+        if self.holding :
+            self.piece, self.holding_block = self.holding_block, self.piece
+            self.piece_x, self.piece_y = 3, 1
+        else :
+            self.holding_block = self.piece
+            self.holding = True
+            self.generate_piece()
+            
     def game_over(self):
         return sum(self.board[0]) > 0 or sum(self.board[1]) > 0
 
@@ -175,7 +195,7 @@ class Board:
             if y >= 2 and y < self.t_height:
                 for x, block in enumerate(row):
                     x += dx
-                    x_pix, y_pix = self.pos_to_pixel(x, y)
+                    x_pix, y_pix = self.tetris_location(x, y)
                     if block:
                         # match block and color
                         color = P_UI.COLORS [block]
@@ -184,36 +204,68 @@ class Board:
                                          (  x_pix, y_pix,
                                             self.block_size,
                                             self.block_size))
-                    if board:
+                    # Board
+                    if board :
                         pygame.draw.rect(self.screen, P_UI.grey,
                         (  x_pix, y_pix,
                             self.block_size,
                             self.block_size), 1)
+
+    def draw_static_block(self, next_name, dx, dy, size):
+        next_block = Piece.PIECES[next_name][0]
+        for x in range(self.mino_size_row_and_col):
+            for y in range(self.mino_size_row_and_col):
+                if next_block[x][y] != 0:
+                    x_pix = dx + size * y
+                    y_pix = dy + size * x
+                    pygame.draw.rect(
+                        self.screen,
+                        P_UI.COLORS[next_block[x][y]],
+                        Rect( x_pix, y_pix,
+                          size, size)
+                    )
+                    pygame.draw.rect(self.screen, P_UI.backcolor,
+                     (  x_pix, y_pix,
+                        self.block_size,
+                        self.block_size), 1)
                         
     def draw_board(self):
-        x_pix, y_pix = self.pos_to_pixel(0, 1)
-        self.screen.fill(P_UI.backcolor)
-
-        # pygame.draw.rect(self.screen,
-        #             P_UI.black,
-        #             Rect(x_pix-20, y_pix-20, 
-        #             self.t_width * self.block_size +40, (self.t_height-1) * self.block_size +40))
-        # pygame.draw.rect(self.screen,
-        #             P_UI.green,
-        #             Rect(x_pix-20, y_pix-20, 
-        #             self.t_width * self.block_size +40, (self.t_height-1) * self.block_size +40),3)        
+        x_pix, y_pix = self.tetris_location(0, 0)
+        x_end = x_pix + self.t_width * self.block_size
+        y_end = y_pix + self.t_height * self.block_size
+        self.screen.fill(P_UI.backcolor)       
+        pygame.draw.circle(self.screen, P_UI.grey_2, (x_pix, y_end), 6, 0)
+        pygame.draw.circle(self.screen, P_UI.grey_2, (x_end, y_end), 6, 0)
         
         pygame.draw.rect(self.screen,
                     P_UI.grey_2,
-                    Rect(x_pix, y_pix, 
+                    Rect(x_pix, y_pix + self.block_size, 
                     self.t_width * self.block_size, (self.t_height-1) * self.block_size),13)        
-
         pygame.draw.rect(self.screen,
                     P_UI.t_background,
-                    Rect(x_pix, y_pix, 
+                    Rect(x_pix, y_pix + self.block_size, 
                     self.t_width * self.block_size, (self.t_height-1) * self.block_size))
-   
 
+        
+
+        font0 = pygame.font.Font(P_UI.font_path, 25)
+        font0.set_underline(1)
+        # font1 = pygame.font.Font(P_UI.font_path, 30)
+        text_hold = font0.render("HOLD", 1, P_UI.black)
+        text_level = font0.render("LEVEL", 1, P_UI.black)
+        text_goal = font0.render("GOAL", 1, P_UI.black)
+        text_next = font0.render("NEXT", 1, P_UI.black)
+        text_score = font0.render("SCORE", 1, P_UI.black)
+        self.screen.blit(text_hold, (39, 34))
+        self.screen.blit(text_level, (37, 210))
+        self.screen.blit(text_goal, (39, 350))
+        self.screen.blit(text_next, (400, 30))
+        self.screen.blit(text_score, (392, 290))
+
+        self.draw_static_block(self.next_1, 385, 75, self.block_size+2)
+        self.draw_static_block(self.next_2, 400, 170, self.block_size-5)
+        self.draw_static_block(self.next_3, 400, 220, self.block_size-5)
+        # self.draw_static_block(self.)
 
     def draw(self):
         self.draw_board()
@@ -241,6 +293,8 @@ class Tetris:
             self.board.full_drop_piece()
         elif event_key == K_ESCAPE:
             self.pause()
+        elif event_key == K_LSHIFT or event_key == K_RSHIFT :
+            self.board.hold_block()
 
     def pause(self):
         running = True
