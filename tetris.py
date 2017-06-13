@@ -277,9 +277,9 @@ class Board:
         self.screen.blit(text_goal, (39, 350))
         self.screen.blit(text_next, (400, 30))
         self.screen.blit(text_score, (392, 300))
-        # self.screen.blit(num_level, (37, 290))
-        # self.screen.blit(num_goal, (38, 400))
-        # self.screen.blit(num_score, (420, 345))
+        self.screen.blit(num_level, (37, 290))
+        self.screen.blit(num_goal, (38, 400))
+        self.screen.blit(num_score, (420, 345))
 
         self.draw_static_block(self.next_1, 385, 75, self.block_size+2)
         self.draw_static_block(self.next_2, 400, 170, self.block_size-5)
