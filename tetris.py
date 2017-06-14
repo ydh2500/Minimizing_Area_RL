@@ -34,9 +34,20 @@ class P_UI:
     HEIGHT = 500
     # font_path , font = I LOVE U 
     path = "./materials/font/Iloveu.ttf"
+    SPEED = 500
+    SPEED_DOWN = 40
 
-
-    # Draw texts
+    drop_path = "./materials/sound/tok.wav"
+    ssg_path = "./materials/sound/ssg.mp3"
+    game_over_path = "./materials/sound/game_over.wav"
+    delete3_path = "./materials/sound/dorrrru.wav"
+    pause_path = "./materials/sound/didong.wav"
+    hold_path = "./materials/sound/cutting.wav"
+    cash_path = "./materials/sound/cash.wav"
+    base_path = "./materials/sound/base.wav" 
+    move_path = "./materials/sound/deb.wav"
+    delete4_path = "./materials/sound/super_weapon.wav"
+    delete_path = "./materials/sound/pop.flac"
 
 class Mino:
 
@@ -74,6 +85,7 @@ class Board:
         self.mino_size_row_and_col = Piece.TETRIMINO_SIZE
         self.holding = False
         self.holding_block = None
+        self.holding_count = False
         self.score = 0
         self.level = 0
         self.goal = 0
@@ -88,6 +100,7 @@ class Board:
         self.next_1 = self.next_2
         self.next_2 = self.next_3
         self.next_3 = random.randrange(1, 8)
+        self.holding_count = False
 
         self.piece_x, self.piece_y = 3, 0
 
@@ -180,9 +193,16 @@ class Board:
             self.score = 500000
         else :
             self.score += (10 + rline * rline * 20)
-        if self.score >= self.goal : self.level += 1
+        if self.score >= self.goal : 
+            self.level += 1
+            P_UI.SPEED -= (P_UI.SPEED_DOWN * self.level)
+            if P_UI.SPEED < 80: P_UI.SPEED = 80
+            self.set_timer(P_UI.SPEED)
+
         self.goal = 280 + self.level * self.level * self.level * 20
 
+    def set_timer(self,timer):
+        pygame.time.set_timer(Tetris.DROP_EVENT, timer)
     def _delete_line(self, y):
         for y in reversed(range(1, y+1)):
             self.board[y] = list(self.board[y-1])
@@ -194,17 +214,21 @@ class Board:
         self.score_up(len(remove))
 
     def hold_block(self):
-        if self.holding :
-            self.piece, self.holding_block = self.holding_block, self.piece
-            self.piece_x, self.piece_y = 3, 1
+        if not self.holding_count :
+            self.holding_count = True
+
+            if self.holding :
+                self.piece, self.holding_block = self.holding_block, self.piece
+                self.piece_x, self.piece_y = 3, 1
+            else :
+                self.holding_block = self.piece
+                self.holding = True
+                self.generate_piece()
+
         else :
-            self.holding_block = self.piece
-            self.holding = True
-            self.generate_piece()
+            pass
     def game_over(self):
         result = sum(self.board[0]) > 0 or sum(self.board[1]) > 0
-        # if result :
-        #     pass
         return result
 
 
@@ -334,11 +358,17 @@ class Tetris:
         self.clock = pygame.time.Clock()
         self.board = Board(self.screen)
         pygame.init()
-        pygame.display.set_caption('TEtris')
+        pygame.display.set_caption('Tetris_by_Lim')
         pygame.time.set_timer(Tetris.DROP_EVENT, 300)
-        self.start()
+        self.main_sound('back.wav')
+        self.start()       
+
+    def main_sound (self, file):
+        pygame.mixer.music.load("./materials/sound/" + file)
+        pygame.mixer.music.play(loops=-1 , start=0.0)
 
     def start(self):
+
         self.screen.fill(P_UI.backcolor)
         hei, size = 240, 20
         self.board.draw_static_block(2, 60, hei, size)
@@ -375,8 +405,21 @@ class Tetris:
             self.board.full_drop_piece()
         elif event_key == K_ESCAPE:
             self.pause()
-        elif event_key == K_LSHIFT or event_key == K_RSHIFT :
+            # self.pause_sound.play()
+        elif event_key == K_LSHIFT  :
             self.board.hold_block()
+            # self.hold_sound.play()
+        # elif event_key == K_q
+            # self.board.rotate_piece(False)
+        else : pass
+
+    def push_key(self):
+        press = pygame.key.get_pressed()
+        if press[pygame.K_DOWN] : 
+            self.board.set_timer(80)
+        else :
+            self.board.set_timer(P_UI.SPEED)
+
 
     def pause(self):
         running = True
@@ -386,12 +429,12 @@ class Tetris:
                     running = False
 
     def run(self):
-        pygame.time.set_timer(Tetris.DROP_EVENT, 500)
+        self.main_sound("main.mp3")
 
+        pygame.time.set_timer(Tetris.DROP_EVENT, P_UI.SPEED)
         while True:
             if self.board.game_over():
-                # pygame.time.wait(3000)
-                
+                self.game_over_sound.play()
                 for event in pygame.event.get():
                     over = pygame.font.Font(P_UI.path, 60).render(("Good Game !"), 1, P_UI.black)
                     self.screen.blit(over, (40, 250))
@@ -409,10 +452,11 @@ class Tetris:
                     self.handle_key(event.key)
                 elif event.type == Tetris.DROP_EVENT:
                     self.board.drop_piece()
+                self.push_key()
 
             self.board.draw()
             pygame.display.update()
-            self.clock.tick(100)
+            self.clock.tick(60)
 
 
 if __name__ == "__main__":
