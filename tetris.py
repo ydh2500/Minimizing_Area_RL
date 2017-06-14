@@ -434,27 +434,25 @@ class Tetris:
         pygame.time.set_timer(Tetris.DROP_EVENT, P_UI.SPEED)
         while True:
             if self.board.game_over():
-                self.game_over_sound.play()
+                pygame.mixer.Sound(P_UI.game_over_path).play()
+                over = pygame.font.Font(P_UI.path, 60).render(("Good Game !"), 1, P_UI.grey_2)
+                self.screen.blit(over, (70, 230))
+                pygame.display.update()
+                pygame.time.delay(2000)
+                pygame.quit()
+                sys.exit()
+            else:
                 for event in pygame.event.get():
-                    over = pygame.font.Font(P_UI.path, 60).render(("Good Game !"), 1, P_UI.black)
-                    self.screen.blit(over, (40, 250))
-                    if event.type == KEYDOWN:
-                        if event.key == K_SPACE:
-                            Tetris()
-                        else :
-                            pygame.quit()
-                            sys.exit()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == KEYDOWN:
-                    self.handle_key(event.key)
-                elif event.type == Tetris.DROP_EVENT:
-                    self.board.drop_piece()
-                self.push_key()
+                    if event.type == QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == KEYDOWN:
+                        self.handle_key(event.key)
+                    elif event.type == Tetris.DROP_EVENT:
+                        self.board.drop_piece()
+                    self.push_key()
 
-            self.board.draw()
+                self.board.draw()
             pygame.display.update()
             self.clock.tick(60)
 
