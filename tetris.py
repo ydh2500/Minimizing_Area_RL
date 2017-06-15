@@ -218,7 +218,7 @@ class Board:
             self.holding_count = True
 
             if self.holding :
-                self.piece, self.holding_block = self.holding_block, self.piece
+                self.piece_xce, self.holding_block = self.holding_block, self.piece
                 self.piece_x, self.piece_y = 3, 1
             else :
                 self.holding_block = self.piece
