@@ -178,6 +178,8 @@ class Board:
         else:
             self.absorb_piece()
             self.delete_lines()
+    def rotate_piece(self, clockwise=True):
+        self._try_rotate_piece(clockwise)
 
     def full_drop_piece(self):
         while self._can_drop_piece():
@@ -185,8 +187,6 @@ class Board:
         self.score += self.level * 5
         self.drop_piece()
 
-    def rotate_piece(self, clockwise=True):
-        self._try_rotate_piece(clockwise)
 
     def score_up(self, rline):
         if self.score > 500000 :
