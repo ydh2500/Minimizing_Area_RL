@@ -1,15 +1,41 @@
-# Minimizing Area by Reinforcement Learning algorithm
+# Minimizing Area by Reinforcement Learning
+
+##### 어떤 사람이 여러 다른 크기의 직사각형들을 A4 용지를 잘라 만들고자 한다. 
+
+##핵심질문: 이때 어떻게 자르는 것이 A4 용지를 가장 적게 사용하는 방법일까?
+
+
+이 문제를 강화학습을 이용하여 풀고자 합니다.
+
+사용하고자 하는 API는 
+
+1. Tensorflow
+2. OpenAI gym
+3. pygame
+4. numpy
+
+정도가 되겠습니다. 
+
+코딩하는 환경은
+
+1. Windows 7 or 10
+2. Anaconda 3
+3. python 3.6 
 
 
 
+### 현재 상태
 
+강화학습을 하기 위한 환경을 구축하고자 합니다. Tetris에 사용된 코드를 벤치마킹 하는 것이 환경구축에 도움이 될 수 있을 것 같아 Tetris를 연구하는 중입니다. 
 
+### 향후 예정 사항
 
-
-
+1. Environment 구축 (알고리즘, 평가방식 등)
+2. Environment가 구축이 되면, 강화학습 알고리즘을 작성.
 
 # Tetris by LIm
 tetris made with pygame
+
 
 ### Tetris같은 Tetris
 
