@@ -1,3 +1,13 @@
+# Minimizing Area by Reinforcement Learning algorithm
+
+
+
+
+
+
+
+
+
 # Tetris by LIm
 tetris made with pygame
 
