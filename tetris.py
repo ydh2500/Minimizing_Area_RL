@@ -26,8 +26,16 @@ class P_UI:
     pink = (242, 64, 235)
     red = (225, 13, 27)
 
-    # PIECES =                  {1: I,    2: J,    3: L,     4: O,      5: S,     6:T,     7:Z}
-    COLORS = { 0: t_background, 1: cyan, 2: blue, 3: orange, 4: yellow, 5: green, 6: pink, 7:red, 8:grey_2}
+    # PIECES ={1: I, 2: J, 3: L, 4: O, 5: S, 6:T, 7:Z}
+    COLORS = { 0: t_background, 
+              1: cyan, 
+              2: blue, 
+              3: orange, 
+              4: yellow, 
+              5: green, 
+              6: pink, 
+              7:red, 
+              8:grey_2}
     # width
     WIDTH = 500
     # height
@@ -48,6 +56,8 @@ class P_UI:
     move_path = "./materials/sound/deb.wav"
     delete4_path = "./materials/sound/super_weapon.wav"
     delete_path = "./materials/sound/pop.flac"
+
+
 
 class Mino:
 
@@ -232,28 +242,6 @@ class Board:
         return result
 
 
-    # def lowest(self, array2d):
-    #     x = self.piece_x
-    #     y = self.piece_y
-    #     for i in range(4):
-    #         for j in range(4):
-    #             if array2d[i][j] != 0:
-    #                 if (y + i + 1) > 20:
-    #                     return True
-    #                 elif self.board[x + j][y + i + 1] != 0 and\
-    #                      self.board[x + j][y + i + 1] != 8:
-    #                     return True
-    # def draw_ghost(self, array2d):
-
-    #     tx, ty = self.piece_x, self.piece_y
-    #     while not self.lowest(array2d):
-    #         ty += 1
-
-    #     for i in range(4):
-    #         for j in range(4):
-    #             if array2d[i][j] != 0:
-    #                 self.board[tx + j][ty + i] = 8  
-
     def draw_blocks(self, array2d, dx=0, dy=0, board=0):
         # if not board :
         #    self. draw_ghost(array2d.array2d)
@@ -310,11 +298,14 @@ class Board:
         pygame.draw.rect(self.screen,
                     P_UI.grey_2,
                     Rect(x_pix, y_pix + self.block_size, 
-                    self.t_width * self.block_size, (self.t_height-1) * self.block_size),13)        
+                    self.t_width * self.block_size, 
+                    (self.t_height-1) * self.block_size)
+                    ,13)        
         pygame.draw.rect(self.screen,
                     P_UI.t_background,
                     Rect(x_pix, y_pix + self.block_size, 
-                    self.t_width * self.block_size, (self.t_height-1) * self.block_size))
+                    self.t_width * self.block_size, 
+                    (self.t_height-1) * self.block_size))
 
         
 
@@ -327,9 +318,20 @@ class Board:
         text_goal = font1.render("GOAL", 1, P_UI.black)
         text_next = font0.render("NEXT", 1, P_UI.black)
         text_score = font1.render("SCORE", 1, P_UI.black)
-        num_level = pygame.font.Font(P_UI.path, 40).render(str(self.level), 1, P_UI.black)
-        num_goal = pygame.font.Font(P_UI.path, 30).render(str(self.goal), 1, P_UI.black)
-        num_score = pygame.font.Font(P_UI.path, 35).render(str(int(self.score)), 1, P_UI.black)
+        num_level = pygame.font.Font(P_UI.path, 40).render(str(self.level), 
+                                                             1, 
+                                                             P_UI.black
+                                                             )
+        
+        num_goal = pygame.font.Font(P_UI.path, 30).render(str(self.goal), 
+                                                            1, 
+                                                            P_UI.black
+                                                            )
+        
+        num_score = pygame.font.Font(P_UI.path, 35).render(str(int(self.score)), 
+                                                             1, 
+                                                             P_UI.black
+                                                             )
 
         self.screen.blit(text_hold, (39, 34))
         self.screen.blit(text_level, (40, 235))
@@ -343,7 +345,11 @@ class Board:
         self.draw_static_block(self.next_2, 400, 170, self.block_size-3)
         self.draw_static_block(self.next_3, 400, 220, self.block_size-3)
         if self.holding_block != None:
-            self.draw_static_block(self.holding_block.piece_name, 30, 100, self.block_size+2)
+            self.draw_static_block(self.holding_block.piece_name, 
+                                   30, 
+                                   100, 
+                                   self.block_size+2
+                                   )
 
     def draw(self):
         self.draw_board()
@@ -435,7 +441,10 @@ class Tetris:
         while True:
             if self.board.game_over():
                 pygame.mixer.Sound(P_UI.game_over_path).play()
-                over = pygame.font.Font(P_UI.path, 60).render(("Good Game !"), 1, P_UI.grey_2)
+                over = pygame.font.Font(P_UI.path, 60).render(("Good Game !"), 
+                                                                1, 
+                                                                P_UI.grey_2
+                                                                )
                 self.screen.blit(over, (70, 230))
                 pygame.display.update()
                 pygame.time.delay(2000)
