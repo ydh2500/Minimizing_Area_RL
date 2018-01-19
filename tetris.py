@@ -63,11 +63,11 @@ class Mino:
 
     def __init__(self, piece_name=0):
         if piece_name:
-            self.piece_name = piece_name
+            self.piece_name = 1
         else:
-            self.piece_name = random.randrange(1, 8)
+            self.piece_name = 1
         self.rotation = 0
-        self.array2d = Piece.PIECES[self.piece_name][self.rotation]
+        self.array2d = PIECES[self.piece_name][self.rotation]
         self.color = P_UI.COLORS[self.piece_name]
 
     def __iter__(self):
@@ -77,7 +77,7 @@ class Mino:
     def rotate(self, clockwise=True):
         self.rotation = (self.rotation + 1) % 4 if clockwise else \
                         (self.rotation - 1) % 4
-        self.array2d = Piece.PIECES[self.piece_name][self.rotation]
+        self.array2d = PIECES[self.piece_name][self.rotation]
 
 class Board:
     COLLIDE_EVENT = {'no_error': 0, 'right_wall': 1, 'left_wall': 2,
@@ -92,7 +92,7 @@ class Board:
         self.next_1 = random.randrange(1, 8)
         self.next_2 = random.randrange(1, 8)
         self.next_3 = random.randrange(1, 8)
-        self.mino_size_row_and_col = Piece.TETRIMINO_SIZE
+        self.mino_size_row_and_col = TETRIMINO_SIZE
         self.holding = False
         self.holding_block = None
         self.holding_count = False
@@ -268,7 +268,7 @@ class Board:
 
 
     def draw_static_block(self, next_name, dx, dy, size):
-        next_block = Piece.PIECES[next_name][0]
+        next_block = PIECES[1][0]
         for x in range(self.mino_size_row_and_col):
             for y in range(self.mino_size_row_and_col):
                 if next_block[x][y] != 0:
