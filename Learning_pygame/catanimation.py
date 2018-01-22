@@ -6,7 +6,7 @@ Created on Mon Jan 22 18:17:29 2018
 """
 
 import pygame, sys
-from pygame.locas import *
+from pygame.locals import *
 
 pygame.init()
 
@@ -22,3 +22,36 @@ catImg = pygame.image.load('cat.png')
 catx = 10
 caty = 10
 direction = 'right'
+
+while True: #Game 루프
+    DISPLAYSURF.fill(WHITE)
+    
+    if direction == 'right':
+        catx += 5
+        if catx == 280:
+            direction = 'down'
+
+    elif direction == 'down':
+        caty += 5
+        if caty == 220:
+            direction = 'left'
+
+    elif direction == 'left':
+        catx -= 5
+        if catx == 10:
+            direction = 'up'
+            
+    elif direction == 'up':
+        caty -= 5
+        if caty == 10:
+            direction = 'right'
+            
+    DISPLAYSURF.blit(catImg, (catx, caty))
+    
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit
+            
+    pygame.display.update()
+    fpsClock.tick(FPS)
