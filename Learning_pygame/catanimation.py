@@ -27,22 +27,22 @@ while True: #Game 루프
     DISPLAYSURF.fill(WHITE)
     
     if direction == 'right':
-        catx += 3
+        catx += 1
         if catx == 280:
             direction = 'down'
 
     elif direction == 'down':
-        caty += 3
+        caty += 1
         if caty == 220:
             direction = 'left'
 
     elif direction == 'left':
-        catx -= 3
+        catx -= 1
         if catx == 10:
             direction = 'up'
             
     elif direction == 'up':
-        caty -= 3
+        caty -= 1
         if caty == 10:
             direction = 'right'
             
